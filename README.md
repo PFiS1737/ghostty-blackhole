@@ -10,6 +10,9 @@ you pick: a built-in *pomodoro* clock (grow through the hour, demand a break,
 leave you alone once you take it), or *token mode*, where it tracks how full
 **Claude Code's context window** is in real time.
 
+This repo now also includes a kitty custom shader port:
+`kitty-blackhole.slang` + `kitty-blackhole.pipeline`.
+
 Modeled on [Eric Bruneton's black hole shader](https://ebruneton.github.io/black_hole_shader/),
 which beam-traces Schwarzschild geodesics against precomputed lookup tables.
 A Ghostty custom shader is a single Shadertoy-style fragment pass with no
@@ -99,6 +102,17 @@ What drives the hole is selected by `SIZE_MODE` near the top of `blackhole.glsl`
   mode, so a live Claude session can't disturb a recording. Record any full
   cycle — the loop restart is obvious (the hole snaps back to the corner
   seed).
+
+### kitty port mode differences
+
+kitty does **not** expose Ghostty's cursor-color uniforms (`iCurrentCursorColor`,
+`iPreviousCursorColor`, `iTimeCursorChange`) nor `iDate`, so the kitty shader
+cannot implement cursor-driven Claude token decoding.
+
+- `MODE_DEMO` is preserved and is the default in `kitty-blackhole.slang`.
+- `MODE_POMODORO` is implemented from kitty `d.timestamp` (time-driven cycle).
+- `MODE_TOKENS` in kitty is a timestamp-driven fallback demo level (not real token
+  telemetry, not cursor-color driven).
 
 ### Token mode
 
@@ -197,6 +211,27 @@ custom-shader-animation = true
 ```
 
 Reload the config (`cmd+shift+,` on macOS) or open a new window.
+
+## Install (kitty)
+
+Requires kitty **0.49.0+** (custom shader + Slang pipeline support).
+
+Copy `kitty-blackhole.slang` and `kitty-blackhole.pipeline` into your kitty
+config shader directory (usually `~/.config/kitty/shaders/`), then add this to
+`kitty.conf`:
+
+```conf
+custom_shaders kitty-blackhole
+```
+
+The pipeline is configured to animate continuously (`animation_stop never`) so
+the hole and accretion disk keep moving.
+
+Porting notes:
+- kitty custom shaders run in **linear RGB** with UV origin at **bottom-left**.
+- The kitty shader samples terminal content via `t.backbuffer.Sample(...)`
+  (no extra sRGB conversion applied to terminal background samples).
+- Final alpha preserves the incoming shader color alpha.
 
 ## Tuning
 
