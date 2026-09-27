@@ -399,7 +399,7 @@ float4 renderBlackhole(KittyTextures t, float2 fragCoord, float2 res, float time
     // (sub-1% at the boundary): disp = (2/b)(1.29u + 0.07)(L - 2.14u + 0.75)
     // in world units, with u = Z0/sqrt(Z0^2 + b^2).
     if (b >= bmax) {
-        float u    = Z0 * rsqrt(Z0 * Z0 + b * b);
+        float u    = Z0 / sqrt(Z0 * Z0 + b * b);
         float defl = (2.0 / (W * W)) / max(plen, 1e-4)
                    * (1.29 * u + 0.07) * max(LENS_DEPTH - 2.14 * u + 0.75, 0.0)
                    * window * shield;
@@ -489,7 +489,7 @@ float4 renderBlackhole(KittyTextures t, float2 fragCoord, float2 res, float time
                 // circular geodesic: g = √(1 − 1.5/r) / (1 − β·k̂), with the
                 // photon direction at the crossing taken from the ray itself
                 float3  gasdir = normalize(cross(n, xc)) * sdir;
-                float beta   = clamp(rsqrt(max(2.0 * (rc - 1.0), 0.2)), 0.0, 0.99);
+                float beta   = clamp(1.0 / sqrt(max(2.0 * (rc - 1.0), 0.2)), 0.0, 0.99);
                 float g      = gloc / max(1.0 + beta * dot(gasdir, normalize(v)), 0.05);
                 g = lerp(1.0, g, L.dopp);
 
