@@ -1,0 +1,5 @@
+startgroup
+    animation_step 16
+    animation_stop never
+    shaders kitty-blackhole
+endgroup
