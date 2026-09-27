@@ -222,7 +222,7 @@ float3 blackbody(float T) {
 // sparse procedural starfield indexed by ray direction — because it is
 // sampled with the *bent* ray, stars smear into arcs around the hole for free
 float3 stars(float3 d, float time) {
-    float2 sph = float2(atan(d.x, -d.z), asin(clamp(d.y, -1.0, 1.0)));
+    float2 sph = float2(atan2(d.x, -d.z), asin(clamp(d.y, -1.0, 1.0)));
     float2 g   = sph * 40.0;
     float2 id  = floor(g);
     float h  = hash21(id);
@@ -473,7 +473,7 @@ float4 renderBlackhole(KittyTextures t, float2 fragCoord, float2 res, float time
                            * (1.0 - smoothstep(rout * 0.70, rout, rc));
 
                 // disk-plane polar coords for the streak texture
-                float phi   = atan(dot(xc, e2), xc.x);
+                float phi   = atan2(dot(xc, e2), xc.x);
                 float turns = phi / 6.2831853;
                 float kep   = pow(rin / rc, 1.5);
                 // √(1 − 1.5/r): time runs slower for the inner orbits — the
